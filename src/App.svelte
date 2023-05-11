@@ -1,59 +1,99 @@
 <script>
-  import { afterUpdate } from 'svelte';
+  import { flip } from 'svelte/animate';
 
-  afterUpdate(() => {
-    document.querySelector('.js-todo-input').focus();
-  });
+  let CANDIDATES = [
+    {
+      "name": "Applied candidates",
+      "items": ["Sai", "Chandu", "Dilli", "Charan", "Gopi", "Koti", "Vinoth"]
+    },
+    {
+      "name": "Selected Candiadates",
+      "items": []
+    },
+    {
+      "name": "Rejected Candidates",
+      "items": []
+    }
+  ];
 
-  let todoItems = [];
-  let newTodo = '';
+  let hoveringOverCANDIDATES;
+  let dropIndex = null;
 
-  function addTodo() {
-    newTodo = newTodo.trim();
-    if (!newTodo) return;
-
-    const todo = {
-      text: newTodo,
-      checked: false,
-      id: Date.now(),
-    };
-
-    todoItems = [...todoItems, todo];
-    newTodo = '';
+  function dragStart(event, CANDIDATESIndex, itemIndex) {
+    const data = { CANDIDATESIndex, itemIndex };
+    event.dataTransfer.setData('text/plain', JSON.stringify(data));
   }
 
-  function toggleDone(id) {
-    const index = todoItems.findIndex(item => item.id === Number(id));
-    todoItems[index].checked = !todoItems[index].checked;
+  function drop(event, CANDIDATESIndex) {
+    event.preventDefault();
+    const json = event.dataTransfer.getData("text/plain");
+    const data = JSON.parse(json);
+
+    const [item] = CANDIDATES[data.CANDIDATESIndex].items.splice(data.itemIndex, 1);
+
+    const items = CANDIDATES[CANDIDATESIndex].items;
+    items.splice(dropIndex ?? items.length, 0, item);
+    CANDIDATES = CANDIDATES;
+
+    hoveringOverCANDIDATES = null;
   }
 
-  function deleteTodo(id) {
-    todoItems = todoItems.filter(item => item.id !== Number(id));
+  function dragOver(e) {
+    dropIndex = null;
+    const itemElement = e.target.closest('[data-item]');
+    if (itemElement == null)
+      return;
+
+    const { CANDIDATES, item } = itemElement.dataset;
+    const targetCANDIDATES = CANDIDATES.find(c => c.name == CANDIDATES);
+    dropIndex = targetCANDIDATES.items.indexOf(item);
   }
 </script>
 
-<main>
-  <div class="container">
-    <h1 class="app-title">todos</h1>
-    <ul class="todo-list">
-      {#each todoItems as todo (todo.id)}
-        <li class="todo-item {todo.checked ? 'done' : ''}">
-          <input id={todo.id} type="checkbox" />
-          <label for={todo.id} class="tick" on:click={() => toggleDone(todo.id)}></label>
-          <span>{todo.text}</span>
-          <button class="delete-todo" on:click={() => deleteTodo(todo.id)}>
-            <svg><use href="#delete-icon"></use></svg>
-          </button>
-        </li>
+<p>CANDIDATES Status</p>
+
+{#each CANDIDATES as CANDIDATES, CANDIDATESIndex (CANDIDATES)}
+  <div animate:flip>
+    <b>{CANDIDATES.name}</b>
+    <ul
+      class:hovering={hoveringOverCANDIDATES === CANDIDATES.name}
+      on:dragenter={() => hoveringOverCANDIDATES = CANDIDATES.name}
+      on:dragleave={() => hoveringOverCANDIDATES = null}
+      on:drop={event => drop(event, CANDIDATESIndex)}
+      on:dragover|preventDefault={dragOver}>
+      {#each CANDIDATES.items as item, itemIndex (item)}
+        <div class="item" data-CANDIDATES={CANDIDATES.name} data-item={item} animate:flip>
+          <li draggable={true} on:dragstart={event => dragStart(event, CANDIDATESIndex, itemIndex)}>
+            {item}
+          </li>
+        </div>
       {/each}
     </ul>
-    <div class="empty-state">
-      <svg class="checklist-icon"><use href="#checklist-icon"></use></svg>
-      <h2 class="empty-state__title">Add your first todo</h2>
-      <p class="empty-state__description">What do you want to get done today?</p>
-    </div>
-    <form on:submit|preventDefault={addTodo}>
-      <input class="js-todo-input" type="text" aria-label="Enter a new todo item" placeholder="E.g. Build a web app" bind:value={newTodo}>
-    </form>
   </div>
-</main>
+{/each}
+
+<style>
+  .hovering {
+    border-color: orange;
+  }
+  .item {
+    display: inline;
+  }
+  li {
+    background-color: lightgray;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px;
+  }
+  li:hover {
+    background: orange;
+    color: rgb(224, 15, 15);
+  }
+  ul {
+    border: solid lightgray 1px;
+    display: flex;
+    height: 40px;
+    padding: 10px;
+  }
+</style>
