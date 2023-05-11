@@ -75,7 +75,7 @@
 	  cursor: pointer;
 	  display: inline-block;
 	  margin-right: 10px;
-	  padding: 10px;
+	  padding: 100px;
 	}
 	li:hover {
 	  background: orange;
@@ -84,8 +84,8 @@
 	ul {
 	  border: solid lightgray 1px;
 	  display: flex;
-	  height: 40px;
-	  padding: 10px;
+	  height: 100px;
+	  padding: 100px;
 	}
   </style>
   
