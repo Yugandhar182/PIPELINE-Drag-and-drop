@@ -20,7 +20,7 @@
 	let dropIndex = null;
   
 	function dragStart(event, CANDIDATESIndex, itemIndex) {
-	  // Set the custom data transfer format
+	
 	  event.dataTransfer.setData('text/plain', `${CANDIDATESIndex}:${itemIndex}`);
 	}
   
