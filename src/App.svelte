@@ -37,7 +37,7 @@
 	}
   </script>
   
-  <h1>Candidate Status</h1>
+  <h1 style="color:blue;">Candidate Status</h1>
   
   {#each applicants as applicant, applicantIndex (applicant)}
 	<div animate:flip>
