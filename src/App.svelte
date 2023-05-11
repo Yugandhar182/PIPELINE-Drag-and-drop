@@ -52,18 +52,18 @@
 
 <h1 style="color:blue;">Candidate Status</h1>
 
-{#each applicants as applicant, applicantIndex (applicant)}
-  <div animate:flip>
-    <b>{applicant.Heading}</b>
-    <ul
-      class:hovering={hoveringOverApplicant === applicant.Heading}
-      on:dragenter={() => hoveringOverApplicant = applicant.Heading}
-      on:dragleave={() => hoveringOverApplicant = null}
-      on:drop={event => drop(event, applicantIndex)}
-      ondragover="return false"
-    >
-      {#each applicant.names as name, nameIndex (name)}
-        <div class="item" animate:flip>
+<div class="applicants-container">
+  {#each applicants as applicant, applicantIndex (applicant)}
+    <div class="applicant" animate:flip>
+      <b>{applicant.Heading}</b>
+      <ul
+        class:hovering={hoveringOverApplicant === applicant.Heading}
+        on:dragenter={() => hoveringOverApplicant = applicant.Heading}
+        on:dragleave={() => hoveringOverApplicant = null}
+        on:drop={event => drop(event, applicantIndex)}
+        ondragover="return false"
+      >
+        {#each applicant.names as name, nameIndex (name)}
           <li
             draggable={true}
             on:dragstart={event => dragStart(event, applicantIndex, nameIndex)}
@@ -72,24 +72,29 @@
             <button on:click={() => editName(applicantIndex, nameIndex)}>Edit</button>
             <button on:click={() => deleteName(applicantIndex, nameIndex)}>Delete</button>
           </li>
-        </div>
-      {/each}
-    </ul>
-  </div>
-{/each}
+        {/each}
+      </ul>
+    </div>
+  {/each}
+</div>
 
 <style>
   .hovering {
     border-color: orange;
   }
-  .item {
-    display: inline;
+  .applicants-container {
+    display: flex;
+    flex-direction: row;
+  }
+  .applicant {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
   }
   li {
     background-color: lightgray;
     cursor: pointer;
-    display: inline-block;
-    margin-right: 10px;
+    margin-bottom: 10px;
     padding: 10px;
   }
   li:hover {
@@ -98,8 +103,6 @@
   }
   ul {
     border: solid lightgray 1px;
-    display: flex;
-    height: 60px;
     padding: 10px;
   }
 </style>
