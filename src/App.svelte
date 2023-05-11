@@ -4,7 +4,7 @@
 	let applicants = [
 	  {
 		"Heading": "CV shared",
-		"names": ["Chandu", "Sai"]
+		"names": ["Chandu", "Sai" ,"Hari", "Muni", "Raghu"]
 	  },
 	  {
 		"Heading": "Shortlisted",
